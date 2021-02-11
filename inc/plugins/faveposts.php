@@ -19,7 +19,9 @@ function faveposts_info()
 
 function faveposts_install()
 {
-	global $db;
+    global $db;
+    
+    # TODO: Alert
 	
 	$db->query("CREATE TABLE ".TABLE_PREFIX."faveposts (
 		`fpid` int(11) NOT NULL AUTO_INCREMENT,
@@ -53,7 +55,29 @@ function faveposts_activate() {
 		'title'		=> 'postbit_faveposts',
         'template'	=> $db->escape_string('<a href="#faveposts{$post[\'pid\']}" title="{$lang->faveposts}" class="postbit_edit"><span>{$lang->faveposts_fave_button}</span></a>
         <div id="faveposts$post[pid]" class="favepostspop">
-  <div class="favepostpopup">Folgt</div><a href="#closepop" class="closepop"></a>
+  <div class="favepostpopup">
+  <form method="post" action="misc.php?action=faveposts&pid={$post[\'pid\']}">
+  <table class="tborder">
+  <tr>
+  <td class="thead" colspan="2">{$lang->faveposts_fave_button}</td>
+  </tr>
+  <tr>
+  <td class="trow1">{$lang->favepost_title}<br /><span class="smalltext">{$lang->favepost_title_description}</span></td>
+  <td class="trow1"><input type="text" name="customtitle" value="{$post[\'subject\']}" /></td>
+  </tr>
+  <tr>
+  <td class="trow1">{$lang->favepost_folder}<br /><span class="smalltext">{$lang->favepost_folder_description}</span></td>
+  <td class="trow1"><select name="fpdid">{$folder_bit}</select></td>
+  </tr>
+  <tr>
+  <td class="trow1" colspan="2" align="center">
+  <input type="submit" value="{$lang->faveposts_fave_button" \>
+  </td>
+  </tr>
+  </table>
+  </form>
+  </div>
+  <a href="#closepop" class="closepop"></a>
 </div>'),
 		'sid'		=> '-1',
 		'version'	=> '',
@@ -61,6 +85,7 @@ function faveposts_activate() {
 	);
     $db->insert_query("templates", $insert_array);
 
+    # TODO: create form with custom title and folder
     $insert_array = array(
 		'title'		=> 'postbit_unfaveposts',
 		'template'	=> $db->escape_string('<a href="misc.php?action=unfave&pid={$post[\'pid\']}" title="{$lang->faveposts}" class="postbit_edit"><span>{$lang->faveposts_unfave_button}</span></a>'),
@@ -92,6 +117,8 @@ function faveposts_activate() {
 		'dateline'	=> TIME_NOW
 	);
     $db->insert_query("templates", $insert_array);
+
+    # TODO: create templates for faveposts and favefolders usercp
 
     $css = array(
 		'name' => 'faveposts.css',
@@ -308,6 +335,11 @@ function faveposts_usercp() {
         $sql = "SELECT * FROM ".TABLE_PREFIX."faveposts WHERE uid = '{$uid}' " . $fquery . " ORDER BY timestamp ASC LIMIT $start, $perpage";
         $query = $db->query($sql);
         while($favepost = $db->fetch_array($query)) {
+            if($favepost['fpdid'] == 0) {
+                $foldertitle = "Allgemein";
+            } else {
+                $foldertitle = $db->fetch_field($db->simple_select("faveposts_dirs", "title", "fpdid = '{$favepost['fpdid']}'"), "title");
+            }
             $savedate = date("d.m.Y", $favepost['timestamp']);
             $pid = $favepost['pid'];
             $post = get_post($pid);
@@ -318,18 +350,7 @@ function faveposts_usercp() {
         output_page($page);  		
     }
 
-    // delete entry...
-    if($mybb->input['action'] == "del_faveposts") {
-        $fpid = $mybb->get_input('fpid');
-        $fpuid = $db->fetch_field($db->simple_select("faveposts", "uid", "fdid = '{$fpid}'"), "uid");
-
-        // ...only if it's your own
-        if($mybb->user['uid'] == $fpduid) {
-            $db->delete_query("faveposts", "fpid = '{$fpid}'");
-        } else { error_no_permission(); }
-
-        redirect("usercp.php?action=faveposts");
-    }
+    # TODO: edit faveposts
     
     if($mybb->input['action'] == "favefolders") {
         eval("\$page = \"".$templates->get("usercp_favefolders")."\";");
