@@ -182,7 +182,7 @@ function faveposts_activate() {
     $insert_array = array(
 		'title'		=> 'usercp_faveposts_bit',
 		'template'	=> $db->escape_string('<tr>
-        <td class="trow2" align="center"><a href="showthread.php?action={$post[\'tid\']}&pid={$post[\'pid\']}#{$post[\'pid\']}" target="_blank">{$favepost[\'customtitle\']}</a> <a href="misc.php?action=unfave&pid={$favepost[\'pid\']}" title="{$lang->faveposts}"><i class="fas fa-trash-alt"></i></a></td>
+        <td class="trow2" align="center"><a href="showthread.php?tid={$post[\'tid\']}&pid={$post[\'pid\']}#pid{$post[\'pid\']}" target="_blank">{$favepost[\'customtitle\']}</a> <a href="misc.php?action=unfave&pid={$favepost[\'pid\']}" title="{$lang->faveposts}"><i class="fas fa-trash-alt"></i></a></td>
         <td class="trow2" align="center">{$foldertitle}</td>
         <td class="trow2" align="center">{$savedate}</td>
         </tr>'),
@@ -226,7 +226,7 @@ function faveposts_activate() {
         </tr>
         <tr>
         <td class="trow2" align="center">
-        <input type="submit" value="{$lang->folders_new}" />
+        <input type="submit" value="{$lang->faveposts_folders_new}" />
         </td>
         </tr>
         </table>
