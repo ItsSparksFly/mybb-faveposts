@@ -182,7 +182,7 @@ function faveposts_activate() {
     $insert_array = array(
 		'title'		=> 'usercp_faveposts_bit',
 		'template'	=> $db->escape_string('<tr>
-        <td class="trow2" align="center"><a href="showthread.php?action={$post[\'tid\']}&pid={$post[\'pid\']}#{$post[\'pid\']}" target="_blank">{$favepost[\'customtitle\']}</a> <a href="misc.php?action=unfave&pid={$faveposts[\'pid\']}" title="{$lang->faveposts}"><i class="fas fa-trash-alt"></i></a></td>
+        <td class="trow2" align="center"><a href="showthread.php?action={$post[\'tid\']}&pid={$post[\'pid\']}#{$post[\'pid\']}" target="_blank">{$favepost[\'customtitle\']}</a> <a href="misc.php?action=unfave&pid={$favepost[\'pid\']}" title="{$lang->faveposts}"><i class="fas fa-trash-alt"></i></a></td>
         <td class="trow2" align="center">{$foldertitle}</td>
         <td class="trow2" align="center">{$savedate}</td>
         </tr>'),
@@ -428,7 +428,7 @@ function faveposts_usercp() {
     $query = $db->simple_select("faveposts_dirs", "title,fpdid", "uid = '{$mybb->user['uid']}'");
     // list folders
     while($folder = $db->fetch_array($query)) {
-        eval("\$folder_bit = \"".$templates->get("usercp_faveposts_nav_folders")."\";");  
+        eval("\$folder_bit .= \"".$templates->get("usercp_faveposts_nav_folders")."\";");  
     }
     eval("\$faveposts_nav = \"".$templates->get("usercp_faveposts_nav")."\";");
     
