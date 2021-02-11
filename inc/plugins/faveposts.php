@@ -50,6 +50,7 @@ function faveposts_activate() {
     global $db, $post;
     include MYBB_ROOT."/inc/adminfunctions_templates.php";
     find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'button_edit\']}')."#i", '{$post[\'faveposts\']}{$post[\'button_edit\']}');
+    find_replace_templatesets("postbit", "#".preg_quote('{$post[\'button_edit\']}')."#i", '{$post[\'faveposts\']}{$post[\'button_edit\']}');
 
     $insert_array = array(
 		'title'		=> 'postbit_faveposts',
@@ -346,6 +347,7 @@ function faveposts_deactivate()
     
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'faveposts\']}')."#i", '', 0);
+    find_replace_templatesets("postbit", "#".preg_quote('{$post[\'faveposts\']}')."#i", '', 0);
 	$db->delete_query("templates", "title LIKE '%faveposts%'");
 }
 
