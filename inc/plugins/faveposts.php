@@ -62,16 +62,16 @@ function faveposts_activate() {
   <td class="thead" colspan="2">{$lang->faveposts_fave_button}</td>
   </tr>
   <tr>
-  <td class="trow1">{$lang->favepost_title}<br /><span class="smalltext">{$lang->favepost_title_description}</span></td>
+  <td class="trow1">{$lang->faveposts_title}<br /><span class="smalltext">{$lang->faveposts_title_description}</span></td>
   <td class="trow1"><input type="text" name="customtitle" value="{$post[\'subject\']}" /></td>
   </tr>
   <tr>
-  <td class="trow1">{$lang->favepost_folder}<br /><span class="smalltext">{$lang->favepost_folder_description}</span></td>
+  <td class="trow1">{$lang->faveposts_folder}<br /><span class="smalltext">{$lang->faveposts_folder_description}</span></td>
   <td class="trow1"><select name="fpdid">{$folder_bit}</select></td>
   </tr>
   <tr>
   <td class="trow1" colspan="2" align="center">
-  <input type="submit" value="{$lang->faveposts_fave_button" \>
+  <input type="submit" value="{$lang->faveposts_fave_button}" />
   </td>
   </tr>
   </table>
@@ -85,7 +85,6 @@ function faveposts_activate() {
 	);
     $db->insert_query("templates", $insert_array);
 
-    # TODO: create form with custom title and folder
     $insert_array = array(
 		'title'		=> 'postbit_unfaveposts',
 		'template'	=> $db->escape_string('<a href="misc.php?action=unfave&pid={$post[\'pid\']}" title="{$lang->faveposts}" class="postbit_edit"><span>{$lang->faveposts_unfave_button}</span></a>'),
@@ -98,10 +97,10 @@ function faveposts_activate() {
     $insert_array = array(
 		'title'		=> 'usercp_faveposts_nav',
         'template'	=> $db->escape_string('<div class="thead">{$lang->faveposts_faved}</div>
-        <div class="trow1"><a href="usercp.php?action=faveposts">{$lang->faveposts_faved_all}</a></div>
-        <div class="trow1"><a href="usercp.php?action=favefolders">{$lang->faveposts_folders_new}</a></div>
+        <div class="tcat"><a href="usercp.php?action=faveposts">{$lang->faveposts_faved_all}</a></div>
+        <div class="tcat"><a href="usercp.php?action=favefolders">{$lang->faveposts_folders_new}</a></div>
         <div class="thead">{$lang->faveposts_folders}</div>
-        <div class="trow1"><a href="usercp.php?action=faveposts&folder=0">{$lang->faveposts_faved_general}</a></div>
+        <div class="tcat"><a href="usercp.php?action=faveposts&folder=0">{$lang->faveposts_folders_general}</a></div>
         {$folder_bit}'),
 		'sid'		=> '-1',
 		'version'	=> '',
@@ -111,7 +110,137 @@ function faveposts_activate() {
 
     $insert_array = array(
 		'title'		=> 'usercp_faveposts_nav_folders',
-		'template'	=> $db->escape_string('<div class="trow1"><a href="usercp.php?action=faveposts&folder={$folder[\'fpdid\']}">{$folder[\'title\']}</a> <a href="usercp.php?action=edit_favefolders&fpdid={$folder[\'fpdid\']}" alt="Bearbeiten" title="Bearbeiten"><i class="fas fa-pencil-alt"></i></a> <a href="usercp.php?action=del_favefolders&fpdid={$folder[\'fpdid\']}" alt="Löschen" title="Bearbeiten"><i class="fas fa-trash-alt"></i></a> </div>'),
+		'template'	=> $db->escape_string('<div class="tcat"><a href="usercp.php?action=faveposts&folder={$folder[\'fpdid\']}">{$folder[\'title\']}</a> <a href="#editfolder{$folder[\'fpdid\']}" alt="Bearbeiten" title="Bearbeiten"><i class="fas fa-pencil-alt"></i></a> <a href="usercp.php?action=del_favefolders&fpdid={$folder[\'fpdid\']}" alt="Löschen" title="Bearbeiten"><i class="fas fa-trash-alt"></i></a></div> 
+        <div id="editfolder{$folder[\'fpdid\']}" class="favepostspop">
+  <div class="favepostpopup">
+  <div class="tborder" style="padding: 10px;">
+  <form method="post" action="usercp.php?action=edit_favefolders&fpdid={$folder[\'fpdid\']}">
+  <center>
+  <input type="text" value="{$folder[\'title\']}" name="title" /><br /><br />
+  <input type="submit" value="{$lang->faveposts_submit_folder}" />
+  </form>
+  </div>
+  </div>
+  <a href="#closepop" class="closepop"></a>
+  </div>'),
+		'sid'		=> '-1',
+		'version'	=> '',
+		'dateline'	=> TIME_NOW
+	);
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+		'title'		=> 'usercp_faveposts',
+		'template'	=> $db->escape_string('<html>
+        <head>
+        <title>{$mybb->settings[\'bbname\']} - {$lang->edit_options}</title>
+        {$headerinclude}
+        </head>
+        <body>
+        {$header}
+        <table width="100%" border="0" align="center">
+        <tr>
+        {$usercpnav}
+        <td valign="top">
+        {$errors}
+        <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+        <tr>
+        <td class="thead" colspan="2"><strong>{$lang->faveposts_page}</strong></td>
+        </tr>
+        <tr>
+        <td valign="top" width="25%">{$faveposts_nav}</td>
+        <td valign="top">
+        <div style="margin: 20px; text-align: justify;">
+        {$lang->faveposts_desc}<br /><br />
+        <table border="0" cellspacing="5" cellpadding="5" class="tborder smalltext">
+        <tr>
+        <td class="thead">{$lang->faveposts_saved}</td>
+        <td class="thead">{$lang->faveposts_folder}</td>
+        <td class="thead">{$lang->faveposts_saved}</td>
+        </tr>
+        {$faveposts_bit}
+        </table>
+        {$multipage}
+        </div>
+        </td>
+        </tr>
+        </table>
+        </td>
+        </tr>
+        </table>
+        </form>
+        {$footer}
+        </body>
+        </html>'),
+		'sid'		=> '-1',
+		'version'	=> '',
+		'dateline'	=> TIME_NOW
+	);
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+		'title'		=> 'usercp_faveposts_bit',
+		'template'	=> $db->escape_string('<tr>
+        <td class="trow2" align="center"><a href="showthread.php?action={$post[\'tid\']}&pid={$post[\'pid\']}#{$post[\'pid\']}" target="_blank">{$favepost[\'customtitle\']}</a> <a href="misc.php?action=unfave&pid={$faveposts[\'pid\']}" title="{$lang->faveposts}"><i class="fas fa-trash-alt"></i></a></td>
+        <td class="trow2" align="center">{$foldertitle}</td>
+        <td class="trow2" align="center">{$savedate}</td>
+        </tr>'),
+		'sid'		=> '-1',
+		'version'	=> '',
+		'dateline'	=> TIME_NOW
+	);
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+		'title'		=> 'usercp_favefolders',
+		'template'	=> $db->escape_string('<html>
+        <head>
+        <title>{$mybb->settings[\'bbname\']} - {$lang->edit_options}</title>
+        {$headerinclude}
+        </head>
+        <body>
+        {$header}
+        <table width="100%" border="0" align="center">
+        <tr>
+        {$usercpnav}
+        <td valign="top">
+        {$errors}
+        <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+        <tr>
+        <td class="thead" colspan="2"><strong>{$lang->faveposts_folders_new}</strong></td>
+        </tr>
+        <tr>
+        <td valign="top" width="25%">{$faveposts_nav}</td>
+        <td valign="top"><br />
+        <div style="margin: 20px; text-align: justify;">
+        <form method="post" action="usercp.php?action=do_favefolders">
+        <table border="0" cellspacing="5" cellpadding="5" class="tborder smalltext">
+        <tr>
+        <td class="thead">{$lang->faveposts_folders_name}</td>
+        </tr>
+        <tr>
+        <td class="trow2" align="center">
+        <input type="text" name="title" />
+        </td>
+        </tr>
+        <tr>
+        <td class="trow2" align="center">
+        <input type="submit" value="{$lang->folders_new}" />
+        </td>
+        </tr>
+        </table>
+        </form>
+        </div>
+        </td>
+        </tr>
+        </table>
+        </td>
+        </tr>
+        </table>
+        </form>
+        {$footer}
+        </body>
+        </html>'),
 		'sid'		=> '-1',
 		'version'	=> '',
 		'dateline'	=> TIME_NOW
@@ -232,16 +361,17 @@ function faveposts_postbit(&$post)
     $query = $db->query($sql);
     // and decide which button to show
     if(mysqli_num_rows($query) > 0) {
-        $post['faveposts'] = eval($templates->render("postbit_unfaveposts"));
+        eval("\$post['faveposts'] = \"".$templates->get("postbit_unfaveposts")."\";");
     } else { 
         // get this user's folders
         $folder_bit = "";
         $folder_bit .= "<option value=\"0\">Allgemein</option>";
         $query2 = $db->simple_select("faveposts_dirs", "*", "uid = '$uid'");
         while($folders = $db->fetch_array($query2)) {
-            $folder_bit .= "<option value=\"{$folder['fpdid']}\">{$folder['title']}</option>";
+            $folder_bit .= "<option value=\"{$folders['fpdid']}\">{$folders['title']}</option>";
         }
-        $post['faveposts'] = eval($templates->render("postbit_faveposts")); }
+        eval("\$post['faveposts'] = \"".$templates->get("postbit_faveposts")."\";");  
+    }
 	return $post;
 }
 
@@ -286,14 +416,14 @@ function faveposts_misc() {
 
 $plugins->add_hook("usercp_start", "faveposts_usercp");
 function faveposts_usercp() {
-	global $db, $mybb, $templates, $header, $footer, $headerinclude, $faveposts_bit, $faveposts_nav, $folder_bit, $lang;
+	global $db, $mybb, $templates, $header, $footer, $headerinclude, $faveposts_bit, $faveposts_nav, $folder_bit, $lang, $usercpnav;
 	$lang->load('faveposts');
 	$uid = $mybb->user['uid'];
     $mybb->input['action'] = $mybb->get_input('action');
 
     // build navigation 
     $folder_bit = "";
-    $query = $db->simple_select("faveposts_dirs", "title", "uid = '{$mybb->user['uid']}'");
+    $query = $db->simple_select("faveposts_dirs", "title,fpdid", "uid = '{$mybb->user['uid']}'");
     // list folders
     while($folder = $db->fetch_array($query)) {
         eval("\$folder_bit = \"".$templates->get("usercp_faveposts_nav_folders")."\";");  
@@ -307,7 +437,7 @@ function faveposts_usercp() {
 
         // include posts without folder
         $fquery = "";
-        if(!empty($folder)) {
+        if(isset($folder)) {
             $fquery = "AND fpdid = {$folder}";
         }
 		
@@ -361,7 +491,7 @@ function faveposts_usercp() {
     if($mybb->input['action'] == "do_favefolders") {
         $insert_array = [
             "uid" => $mybb->user['uid'],
-            "title" => $db->escape_string($mybb->get_input('title'));
+            "title" => $db->escape_string($mybb->get_input('title'))
         ];
         $db->insert_query("faveposts_dirs", $insert_array);
 
@@ -389,7 +519,7 @@ function faveposts_usercp() {
         // ...only if it's your own
         if($mybb->user['uid'] == $fpduid) {
             $insert_array = [
-                "title" => $db->escape_string($mybb->get_input('title'));
+                "title" => $db->escape_string($mybb->get_input('title'))
             ];
             $db->update_query("faveposts_dirs", $insert_array, "fpdid = '{$fpdid}'");
         } else { error_no_permission(); }
